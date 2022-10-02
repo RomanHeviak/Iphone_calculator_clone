@@ -9,7 +9,7 @@ const keyboard_config = {
         {"value" : "7", "background" : "primary"},
         {"value" : "8", "background" : "primary"},
         {"value" : "9", "background" : "primary"},
-        {"value" : "X", "background" : "orange"}
+        {"value" : "x", "background" : "orange"}
     ],
     "row_three" : [
         {"value" : "4", "background" : "primary"},

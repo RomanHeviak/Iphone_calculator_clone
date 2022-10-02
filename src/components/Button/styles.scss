@@ -11,6 +11,7 @@
     border-radius: 50%;
     color: white;
     background-color: #313131;
+    transition: all .3s;
 
     &:hover {
         opacity: 0.8;
@@ -32,4 +33,9 @@
 
 .orange {
     background-color: #F69906;
+}
+
+.selected {
+    background-color: white;
+    color: #F69906;
 }
