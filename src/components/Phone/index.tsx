@@ -19,9 +19,13 @@ const Phone = () => {
     const [leftValue, setLeftValue] = useState<string>('');
     const [rightValue, setRightValue] = useState<string>('');
     const [operand, setOperand] = useState<string[]>([]);
+    const [proceed, setProceed] = useState(false);
+    const [minusValue, setMinusValue] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
-        setKeyboard(Object.values(keyboard_config))
+        setKeyboard(Object.values(keyboard_config));
+        setInterval(() => setCurrentTime(new Date()),10000)
     },[])
 
     useEffect(() => {
@@ -36,7 +40,7 @@ const Phone = () => {
     const generateButton = (props: IButton) => {
         let onClick= null;
         if(props.value === 'AC' || props.value === 'C') {
-            props.value = dispayValue <= 0 ? 'AC' : 'C';
+            props.value = proceed ? 'C' : 'AC';
             onClick = reset;
         }else if (props.value === '='){
             onClick = calculate;
@@ -50,50 +54,57 @@ const Phone = () => {
                 background={props.background}
                 double={props.double}
                 valueChange={onClick}
-                selectedOperand={operand[operand.length - 1] === props.value}
+                selectedOperand={operand[operand.length - 1] === props.value || (props.value === '-' && minusValue)}
             />
         )
     }
 
     const calculate = () => {
-        console.log(leftValue)
-        console.log(operand)
-        console.log(rightValue)
-        console.log('=================')
         switch(operand[operand.length - 1]) {
             case '+' : {
                 setDispayValue(+leftValue + +rightValue);
                 setLeftValue(String(+leftValue + +rightValue));
-                setRightValue('')
-                setOperand([]);
                 break
             }
             case '-' : {
                 setDispayValue(+leftValue - +rightValue);
                 setLeftValue(String(+leftValue - +rightValue));
-                setRightValue('')
-                setOperand([]);
                 break
             }
             case 'x' : {
                 setDispayValue(+leftValue * +rightValue);
-                setLeftValue(String(+leftValue - +rightValue));
-                setRightValue('')
-                setOperand([]);
+                setLeftValue(String(+leftValue * +rightValue));
+                break
+            }
+            case '÷' : {
+                setDispayValue(+leftValue / +rightValue);
+                setLeftValue(String(+leftValue / +rightValue));
+                break
+            }
+            case '%' : {
+                setDispayValue(+leftValue % +rightValue);
+                setLeftValue(String(+leftValue % +rightValue));
                 break
             }
         }
+        setRightValue('')
+        setOperand([]);
     }
 
     const onKeyboardChange = (value: number | string) => {
         if(!isNaN(+value)){
             if(!operand.length){
+                setMinusValue(false);
                 setLeftValue(leftValue + value)
             }else {
                 setRightValue(rightValue + value)
             }
         }else {
-            if(dispayValue > 0) {
+            if(!proceed && value === '-'){
+                setLeftValue('-0');
+                setMinusValue(true);
+            }
+            if(proceed) {
                 setOperand([...operand, value as string]);
             }
             if(leftValue && rightValue) {
@@ -101,7 +112,7 @@ const Phone = () => {
                 setOperand([...operand, value as string]);
             }
         }
-        
+        setProceed(true);
     }
 
     const reset = () => {
@@ -109,12 +120,14 @@ const Phone = () => {
         setOperand([]);
         setLeftValue('');
         setRightValue('');
+        setProceed(false);
+        setMinusValue(false);
     }
 
     return (
         <div className='phone'>
             <div className='phone_header'>
-                <div className="phone_header_left">9:41</div>
+                <div className="phone_header_left">{currentTime.getHours()}:{currentTime.getMinutes()}</div>
                 <div className="phone_header_right">
                     {Wifi()}
                     {Batery()}
